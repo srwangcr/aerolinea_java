@@ -25,7 +25,7 @@ private String apellido = "";
 private String nacionalidad = "";
 private String pais_de_residencia = "";
 private String fecha_de_nacimiento = "";
-private int numero_de_pasaporte = 0;
+private String numero_de_pasaporte = ""; // Cambiado a String
 private String pais_emisor_pasaporte = "";
 private String fecha_expiracion_pasaporte = "";
 
@@ -33,9 +33,9 @@ private String fecha_expiracion_pasaporte = "";
 //Datos personales
 private int telefono = 0;
 private String email = "";
-private String direccion = "";
+// private String direccion = ""; // Eliminado
 private String codigoPostal = "";
-private String provincia = "";
+// private String provincia = ""; // Eliminado
 private String poblacion = ""; 
 
 
@@ -51,7 +51,7 @@ private boolean aceptar_terminos = false;
 // Constructor
 
 
-    public pasajes(String ida_origen, String ida_destino, String ida_fecha, int ida_pasajeros, double ida_precio, String ida_turistaPaquete, String ida_opcionesExtra, String vuelta_origen, String vuelta_destino, String vuelta_fecha, int vuelta_pasajeros, double vuelta_precio, String vuelta_turistaPaquete, String vuelta_opcionesExtra, String datos, String nombre, String apellido, String nacionalidad, String pais_de_residencia, String fecha_de_nacimiento, int numero_de_pasaporte, String pais_emisor_pasaporte, String fecha_expiracion_pasaporte, int telefono, String email, String direccion, String codigoPostal, String provincia, String poblacion, String numeero_tarjeta, String nombre_titular_tarjeta, String fecha_vencimiento_tarjeta, String codigo_seguridad_tarjeta, boolean aceptar_terminos) {
+    public pasajes(String ida_origen, String ida_destino, String ida_fecha, int ida_pasajeros, double ida_precio, String ida_turistaPaquete, String ida_opcionesExtra, String vuelta_origen, String vuelta_destino, String vuelta_fecha, int vuelta_pasajeros, double vuelta_precio, String vuelta_turistaPaquete, String vuelta_opcionesExtra, String datos, String nombre, String apellido, String nacionalidad, String pais_de_residencia, String fecha_de_nacimiento, String numero_de_pasaporte, String pais_emisor_pasaporte, String fecha_expiracion_pasaporte, int telefono, String email, String codigoPostal, String poblacion, String numeero_tarjeta, String nombre_titular_tarjeta, String fecha_vencimiento_tarjeta, String codigo_seguridad_tarjeta, boolean aceptar_terminos) {
         this.ida_origen = ida_origen; 
         this.ida_destino = ida_destino;
         this.ida_fecha = ida_fecha;
@@ -72,14 +72,14 @@ private boolean aceptar_terminos = false;
         this.nacionalidad = nacionalidad;
         this.pais_de_residencia = pais_de_residencia;
         this.fecha_de_nacimiento = fecha_de_nacimiento;
-        this.numero_de_pasaporte = numero_de_pasaporte;
+        this.numero_de_pasaporte = numero_de_pasaporte; // Cambiado a String
         this.pais_emisor_pasaporte = pais_emisor_pasaporte;
         this.fecha_expiracion_pasaporte = fecha_expiracion_pasaporte;
         this.telefono = telefono;
         this.email = email;
-        this.direccion = direccion;
+        // this.direccion = direccion; // Eliminado
         this.codigoPostal = codigoPostal;
-        this.provincia = provincia;
+        // this.provincia = provincia; // Eliminado
         this.poblacion = poblacion; 
         this.numeero_tarjeta = numeero_tarjeta;
         this.nombre_titular_tarjeta = nombre_titular_tarjeta;
@@ -87,6 +87,20 @@ private boolean aceptar_terminos = false;
         this.codigo_seguridad_tarjeta = codigo_seguridad_tarjeta;
         this.aceptar_terminos = aceptar_terminos;
     }
+
+
+
+public pasajes(String ida_origen2, String ida_destino2, String ida_fecha2, int ida_pasajeros2, double ida_precio2,
+			String ida_turistaPaquete2, String ida_opcionesExtra2, String vuelta_origen2, String vuelta_destino2,
+			String vuelta_fecha2, int vuelta_pasajeros2, double vuelta_precio2, String vuelta_turistaPaquete2,
+			String vuelta_opcionesExtra2, String datos2, String nombre2, String apellido2, String nacionalidad2,
+			String pais_de_residencia2, String fecha_de_nacimiento2, int numero_de_pasaporte2,
+			String pais_emisor_pasaporte2, String fecha_expiracion_pasaporte2, int telefono2, String email2,
+			String direccion, String codigoPostal2, String provincia, String poblacion2, String numero_tarjeta,
+			String nombre_titular_tarjeta2, String fecha_vencimiento_tarjeta2, String codigo_seguridad_tarjeta2,
+			boolean aceptar_terminos2) {
+		//TODO Auto-generated constructor stub
+	}
 
 
 
@@ -254,11 +268,11 @@ public void solicitar_datos_usuario() {
         this.fecha_de_nacimiento = fecha_de_nacimiento;
     }
 
-    public int getNumero_de_pasaporte() {
+    public String getNumero_de_pasaporte() {
         return this.numero_de_pasaporte;
     }
 
-    public void setNumero_de_pasaporte(int numero_de_pasaporte) {
+    public void setNumero_de_pasaporte(String numero_de_pasaporte) {
         this.numero_de_pasaporte = numero_de_pasaporte;
     }
 
@@ -294,28 +308,12 @@ public void solicitar_datos_usuario() {
         this.email = email;
     }
 
-    public String getDireccion() {
-        return this.direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
     public String getCodigoPostal() {
         return this.codigoPostal;
     }
 
     public void setCodigoPostal(String codigoPostal) {
         this.codigoPostal = codigoPostal;
-    }
-
-    public String getProvincia() {
-        return this.provincia;
-    }
-
-    public void setProvincia(String provincia) {
-        this.provincia = provincia;
     }
 
     public String getPoblacion() { 
@@ -380,54 +378,94 @@ class PedirDatosUsuario {
     public void solicitarDatos() {
         //oscar aca
         //ida
-    String ida_origen = JOptionPane.showInputDialog("Ingrese el origen del viaje de ida:"); 
-    String ida_destino = JOptionPane.showInputDialog("Ingrese el destino del viaje de ida:");
-    String ida_fecha = JOptionPane.showInputDialog("Ingrese la fecha del viaje de ida:");
-    int ida_pasajeros = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el número de pasajeros para el viaje de ida:"));
-    double ida_precio = Double.parseDouble(JOptionPane.showInputDialog("Ingrese el precio del viaje de ida:"));
-    String ida_turistaPaquete = JOptionPane.showInputDialog("Ingrese el paquete turístico para el viaje de ida:");
-    String ida_opcionesExtra = JOptionPane.showInputDialog("Ingrese las opciones extra para el viaje de ida:");
-    String vuelta_origen = JOptionPane.showInputDialog("Ingrese el origen del viaje de vuelta:");
+        String ida_origen = JOptionPane.showInputDialog("Ingrese el origen del viaje de ida:"); 
+        String ida_destino = JOptionPane.showInputDialog("Ingrese el destino del viaje de ida (Escriba el numero):" +
+            "\nOpciones:" + "1.Madrid" + "2." + "3.Moscú" + "4.Osaka" + "5.Bogota" );
+        switch (ida_destino) {
+            case "1":
+                ida_destino = "Madrid";
+                break;
+            case "2":
+                ida_destino = "Barcelona";
+                break;
+            case "3":
+                ida_destino = "Moscú";
+                break;
+            case "4":
+                ida_destino = "Osaka";
+                break;
+            case "5":
+                ida_destino = "Bogota";
+                break;
+            default:
+                JOptionPane.showMessageDialog(null, "Destino no válido. Por favor, intente de nuevo.");
+                return; // Salir si el destino no es válido
+        }
 
-    //vuelta
-    String vuelta_destino = JOptionPane.showInputDialog("Ingrese el destino del viaje de vuelta:");
-    String vuelta_fecha = JOptionPane.showInputDialog("Ingrese la fecha del viaje de vuelta:");
-    int vuelta_pasajeros = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el número de pasajeros para el viaje de vuelta:"));
-    double vuelta_precio = Double.parseDouble(JOptionPane.showInputDialog("Ingrese el precio del viaje de vuelta:"));
-    String vuelta_turistaPaquete = JOptionPane.showInputDialog("Ingrese el paquete turístico para el viaje de vuelta:");
-    String vuelta_opcionesExtra = JOptionPane.showInputDialog("Ingrese las opciones extra para el viaje de vuelta:");
+        String ida_fecha = JOptionPane.showInputDialog("Ingrese la fecha del viaje de ida:");
+        int ida_pasajeros = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el número de pasajeros para el viaje de ida:"));
+        double ida_precio = Double.parseDouble(JOptionPane.showInputDialog("Ingrese el precio del viaje de ida:"));
+        String ida_turistaPaquete = JOptionPane.showInputDialog("Ingrese el paquete turístico para el viaje de ida:");
+        String ida_opcionesExtra = JOptionPane.showInputDialog("Ingrese las opciones extra para el viaje de ida:");
+        String vuelta_origen = JOptionPane.showInputDialog("Ingrese el origen del viaje de vuelta:");
 
-    // Datos 
-    String datos = JOptionPane.showInputDialog("Ingrese sus datos personales:");
-    String nombre = JOptionPane.showInputDialog("Ingrese su nombre:");
-    String apellido = JOptionPane.showInputDialog("Ingrese su apellido:");  
-    String nacionalidad = JOptionPane.showInputDialog("Ingrese su nacionalidad:");
-    String pais_de_residencia = JOptionPane.showInputDialog("Ingrese su país de residencia:");
-    String fecha_de_nacimiento = JOptionPane.showInputDialog("Ingrese su fecha de nacimiento:");
-    int numero_de_pasaporte = Integer.parseInt(JOptionPane.showInputDialog("Ingrese su número de pasaporte:"));
-    String pais_emisor_pasaporte = JOptionPane.showInputDialog("Ingrese el país emisor de su pasaporte:");
-    String fecha_expiracion_pasaporte = JOptionPane.showInputDialog("Ingrese la fecha de expiración de su pasaporte:");
+        //vuelta
+        String vuelta_destino = JOptionPane.showInputDialog("Ingrese el destino del viaje de vuelta:");
+        switch (vuelta_destino) {
+            case "1":
+                vuelta_destino = "Madrid";
+                break;
+            case "2":
+                vuelta_destino = "Barcelona";
+                break;
+            case "3":
+                vuelta_destino = "Moscú";
+                break;
+            case "4":
+                vuelta_destino = "Osaka";
+                break;
+            case "5":
+                vuelta_destino = "Bogota";
+                break;
+            case "6":
+                vuelta_destino = ida_origen; // Si el destino de vuelta es el mismo que el de ida
+                break;
+            default:
+                JOptionPane.showMessageDialog(null, "Destino no válido. Por favor, intente de nuevo.");
+                return; // Salir si el destino no es válido
+        }
+        String vuelta_fecha = JOptionPane.showInputDialog("Ingrese la fecha del viaje de vuelta:");
+        int vuelta_pasajeros = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el número de pasajeros para el viaje de vuelta:"));
+        double vuelta_precio = Double.parseDouble(JOptionPane.showInputDialog("Ingrese el precio del viaje de vuelta:"));
+        String vuelta_turistaPaquete = JOptionPane.showInputDialog("Ingrese el paquete turístico para el viaje de vuelta:");
+        String vuelta_opcionesExtra = JOptionPane.showInputDialog("Ingrese las opciones extra para el viaje de vuelta:");
 
-    // Datos personales
-    int telefono = Integer.parseInt(JOptionPane.showInputDialog("Ingrese su número de teléfono:"));
-    String email = JOptionPane.showInputDialog("Ingrese su correo electrónico:");
-    String direccion = JOptionPane.showInputDialog("Ingrese su dirección:");
-    String codigoPostal = JOptionPane.showInputDialog("Ingrese su código postal:");
-    String provincia = JOptionPane.showInputDialog("Ingrese su provincia:");
-    String poblacion = JOptionPane.showInputDialog("Ingrese su población:"); 
+        // Datos 
+        String datos = JOptionPane.showInputDialog("Ingrese sus datos personales:");
+        String nombre = JOptionPane.showInputDialog("Ingrese su nombre:");
+        String apellido = JOptionPane.showInputDialog("Ingrese su apellido:");  
+        String nacionalidad = JOptionPane.showInputDialog("Ingrese su nacionalidad:");
+        String pais_de_residencia = JOptionPane.showInputDialog("Ingrese su país de residencia:");
+        String fecha_de_nacimiento = JOptionPane.showInputDialog("Ingrese su fecha de nacimiento:");
+        String numero_de_pasaporte = JOptionPane.showInputDialog("Ingrese su número de pasaporte:"); // Ahora String
+        String pais_emisor_pasaporte = JOptionPane.showInputDialog("Ingrese el país emisor de su pasaporte:");
+        String fecha_expiracion_pasaporte = JOptionPane.showInputDialog("Ingrese la fecha de expiración de su pasaporte:");
 
-    // Datos de pago
-    String numeero_tarjeta = JOptionPane.showInputDialog("Ingrese el número de su tarjeta:");
-    String nombre_titular_tarjeta = JOptionPane.showInputDialog("Ingrese el nombre del titular de la tarjeta:");
-    String fecha_vencimiento_tarjeta = JOptionPane.showInputDialog("Ingrese la fecha de vencimiento de su tarjeta:");
-    String codigo_seguridad_tarjeta = JOptionPane.showInputDialog("Ingrese el código de seguridad de su tarjeta:");
-    boolean aceptar_terminos = JOptionPane.showConfirmDialog(null, "¿Acepta los términos y condiciones?") == JOptionPane.YES_OPTION;
+        // Datos personales
+        int telefono = Integer.parseInt(JOptionPane.showInputDialog("Ingrese su número de teléfono:"));
+        String email = JOptionPane.showInputDialog("Ingrese su correo electrónico:");
+        // String direccion = JOptionPane.showInputDialog("Ingrese su dirección:"); // Eliminado
+        String codigoPostal = JOptionPane.showInputDialog("Ingrese su código postal:");
+        // String provincia = JOptionPane.showInputDialog("Ingrese su provincia:"); // Eliminado
+        String poblacion = JOptionPane.showInputDialog("Ingrese su población:"); 
 
+        // Datos de pago
+        String numeero_tarjeta = JOptionPane.showInputDialog("Ingrese el número de su tarjeta:");
+        String nombre_titular_tarjeta = JOptionPane.showInputDialog("Ingrese el nombre del titular de la tarjeta:");
+        String fecha_vencimiento_tarjeta = JOptionPane.showInputDialog("Ingrese la fecha de vencimiento de su tarjeta:");
+        String codigo_seguridad_tarjeta = JOptionPane.showInputDialog("Ingrese el código de seguridad de su tarjeta:");
+        boolean aceptar_terminos = JOptionPane.showConfirmDialog(null, "¿Acepta los términos y condiciones?") == JOptionPane.YES_OPTION;
+    }
 }
 
-
-
-
-
-}
-
+    

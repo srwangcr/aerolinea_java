@@ -3,12 +3,10 @@ import javax.swing.JOptionPane;
 public class menu {
     private Login login;
     private pasajes pasajeActual;
-    private PedirDatosUsuario recolectorDatos;
     
     public menu() {
         this.login = new Login();
         this.pasajeActual = null;
-        this.recolectorDatos = new PedirDatosUsuario();
     }
     
     public void mostrarMenu() {
@@ -138,33 +136,34 @@ public class menu {
                 "Puede cancelar en cualquier momento presionando 'Cancelar'."
             );
             
-            // Llamar al método de la clase PedirDatosUsuario
-            recolectorDatos.solicitarDatos();
-            
-            // Mostrar mensaje de finalización
-            JOptionPane.showMessageDialog(null, 
-                "¡Datos recopilados exitosamente!\n\n" +
-                "Toda la información ha sido registrada.\n" +
-                "Puede ver un resumen en 'Ver Datos Recopilados'."
-            );
-            
-            // Crear un pasaje básico para indicar que hay datos
-            crearPasajeConDatos();
+            try {
+                // Crear una nueva instancia mejorada del recolector de datos
+                PedirDatosUsuarioMejorado recolectorMejorado = new PedirDatosUsuarioMejorado();
+                this.pasajeActual = recolectorMejorado.solicitarDatosCompletos();
+                
+                if (this.pasajeActual != null) {
+                    // Asignar el usuario actual al pasaje
+                    this.pasajeActual.setNombre(login.getUsuarioActivo());
+                    
+                    // Mostrar mensaje de finalización
+                    JOptionPane.showMessageDialog(null, 
+                        "¡Datos recopilados exitosamente!\n\n" +
+                        "Toda la información ha sido registrada.\n" +
+                        "Puede ver un resumen en 'Ver Datos Recopilados'."
+                    );
+                } else {
+                    JOptionPane.showMessageDialog(null, 
+                        "Recolección de datos cancelada.\n" +
+                        "Puede intentar nuevamente cuando desee."
+                    );
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, 
+                    "Error al recopilar datos: " + e.getMessage() + "\n" +
+                    "Por favor, intente nuevamente."
+                );
+            }
         }
-    }
-    
-    private void crearPasajeConDatos() {
-        // Crear un pasaje con datos básicos para mantener el estado
-        this.pasajeActual = new pasajes(
-            "", "", "", 0, 0.0, "", "",  // Datos de ida
-            "", "", "", 0, 0.0, "", "",  // Datos de vuelta  
-            "", "", "", "", "", "", 0, "", "",  // Datos personales
-            0, "", "", "", "", "",  // Contacto
-            "", "", "", "", false  // Pago y términos
-        );
-        
-        // Asignar el usuario actual
-        this.pasajeActual.setNombre(login.getUsuarioActivo());
     }
     
     private void verDatosRecopilados() {
@@ -179,19 +178,28 @@ public class menu {
         
         String resumen = "=== DATOS RECOPILADOS ===\n\n" +
                         "Usuario: " + login.getUsuarioActivo() + "\n\n" +
-                        "ESTADO DE RECOLECCIÓN:\n" +
+                        "INFORMACIÓN DE VUELOS:\n" +
+                        "• Vuelo de Ida: " + pasajeActual.getIda_origen() + " → " + pasajeActual.getIda_destino() + "\n" +
+                        "• Fecha Ida: " + pasajeActual.getIda_fecha() + "\n" +
+                        "• Pasajeros Ida: " + pasajeActual.getIda_pasajeros() + "\n" +
+                        "• Precio Ida: $" + pasajeActual.getIda_precio() + "\n\n" +
+                        "• Vuelo de Vuelta: " + pasajeActual.getVuelta_origen() + " → " + pasajeActual.getVuelta_destino() + "\n" +
+                        "• Fecha Vuelta: " + pasajeActual.getVuelta_fecha() + "\n" +
+                        "• Pasajeros Vuelta: " + pasajeActual.getVuelta_pasajeros() + "\n" +
+                        "• Precio Vuelta: $" + pasajeActual.getVuelta_precio() + "\n\n" +
+                        "INFORMACIÓN PERSONAL:\n" +
+                        "• Nombre: " + pasajeActual.getNombre() + " " + pasajeActual.getApellido() + "\n" +
+                        "• Nacionalidad: " + pasajeActual.getNacionalidad() + "\n" +
+                        "• Email: " + pasajeActual.getEmail() + "\n" +
+                        "• Teléfono: " + pasajeActual.getTelefono() + "\n\n" +
+                        "ESTADO:\n" +
                         "✓ Datos de vuelos registrados\n" +
-                        "✓ Información personal registrada\n" +
+                        "✓ Información personal completa\n" +
                         "✓ Datos de pasaporte registrados\n" +
-                        "✓ Información de contacto registrada\n" +
+                        "✓ Información de contacto completa\n" +
                         "✓ Datos de pago registrados\n" +
-                        "✓ Términos y condiciones aceptados\n\n" +
-                        "PRÓXIMOS PASOS:\n" +
-                        "• Revisar información en 'Gestión de Pasajes'\n" +
-                        "• Configurar maletas en 'Gestión de Maletas'\n" +
-                        "• Procesar pago en 'Proceso de Pago'\n\n" +
-                        "Nota: Esta información se mantendrá durante\n" +
-                        "toda su sesión activa.";
+                        "✓ Términos y condiciones: " + (pasajeActual.getAceptar_terminos() ? "Aceptados" : "Pendientes") + "\n\n" +
+                        "PRECIO TOTAL: $" + (pasajeActual.getIda_precio() + pasajeActual.getVuelta_precio());
         
         JOptionPane.showMessageDialog(null, resumen, "Datos Recopilados", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -335,17 +343,29 @@ public class menu {
     private void mostrarResumenReserva() {
         String resumen = "=== RESUMEN DE RESERVA ===\n\n" +
                         "Usuario: " + login.getUsuarioActivo() + "\n\n" +
-                        "ESTADO ACTUAL:\n" +
-                        "✓ Datos de usuario recopilados\n" +
-                        "✓ Información de vuelos registrada\n" +
-                        "✓ Datos personales completos\n" +
-                        "✓ Información de pago disponible\n\n" +
-                        "PRÓXIMOS PASOS:\n" +
-                        "• Configurar maletas (opcional)\n" +
-                        "• Revisar información final\n" +
-                        "• Procesar pago para confirmar\n\n" +
-                        "Nota: Los datos detallados se procesan\n" +
-                        "internamente por el sistema.";
+                        "VUELOS PROGRAMADOS:\n" +
+                        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                        "VUELO DE IDA:\n" +
+                        "• Ruta: " + pasajeActual.getIda_origen() + " → " + pasajeActual.getIda_destino() + "\n" +
+                        "• Fecha: " + pasajeActual.getIda_fecha() + "\n" +
+                        "• Pasajeros: " + pasajeActual.getIda_pasajeros() + "\n" +
+                        "• Precio: $" + pasajeActual.getIda_precio() + "\n" +
+                        "• Paquete: " + (pasajeActual.getIda_turistaPaquete().isEmpty() ? "Ninguno" : pasajeActual.getIda_turistaPaquete()) + "\n\n" +
+                        "VUELO DE VUELTA:\n" +
+                        "• Ruta: " + pasajeActual.getVuelta_origen() + " → " + pasajeActual.getVuelta_destino() + "\n" +
+                        "• Fecha: " + pasajeActual.getVuelta_fecha() + "\n" +
+                        "• Pasajeros: " + pasajeActual.getVuelta_pasajeros() + "\n" +
+                        "• Precio: $" + pasajeActual.getVuelta_precio() + "\n" +
+                        "• Paquete: " + (pasajeActual.getVuelta_turistaPaquete().isEmpty() ? "Ninguno" : pasajeActual.getVuelta_turistaPaquete()) + "\n\n" +
+                        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                        "PASAJERO PRINCIPAL:\n" +
+                        "• Nombre: " + pasajeActual.getNombre() + " " + pasajeActual.getApellido() + "\n" +
+                        "• Nacionalidad: " + pasajeActual.getNacionalidad() + "\n" +
+                        "• Pasaporte: " + pasajeActual.getNumero_de_pasaporte() + "\n" +
+                        "• Email: " + pasajeActual.getEmail() + "\n\n" +
+                        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                        "PRECIO TOTAL: $" + (pasajeActual.getIda_precio() + pasajeActual.getVuelta_precio()) + "\n" +
+                        "ESTADO: " + (pasajeActual.getAceptar_terminos() ? "Listo para pago" : "Términos pendientes");
         
         JOptionPane.showMessageDialog(null, resumen, "Resumen de Reserva", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -399,20 +419,67 @@ public class menu {
             return;
         }
         
-        JOptionPane.showMessageDialog(null,
-            "=== PROCESO DE PAGO ===\n\n" +
-            "Usuario: " + login.getUsuarioActivo() + "\n" +
-            "Reserva: Lista para pago\n\n" +
-            "Métodos de pago disponibles:\n" +
-            "• Tarjeta de crédito ✓\n" +
-            "• Tarjeta de débito ✓\n" +
-            "• Transferencia bancaria\n" +
-            "• PayPal\n\n" +
-            "Los datos de pago ya fueron recopilados.\n" +
-            "(Procesamiento en desarrollo)",
-            "Proceso de Pago",
-            JOptionPane.INFORMATION_MESSAGE
+        // Mostrar resumen de pago
+        double total = pasajeActual.getIda_precio() + pasajeActual.getVuelta_precio();
+        String tarjeta = pasajeActual.getNumeero_tarjeta();
+        String tarjetaOculta = tarjeta.length() > 4 ? "**** **** **** " + tarjeta.substring(tarjeta.length() - 4) : "****";
+        
+        String resumenPago = "=== PROCESO DE PAGO ===\n\n" +
+                           "RESUMEN DE TRANSACCIÓN:\n" +
+                           "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                           "Cliente: " + pasajeActual.getNombre() + " " + pasajeActual.getApellido() + "\n" +
+                           "Email: " + pasajeActual.getEmail() + "\n\n" +
+                           "DESGLOSE DE PRECIOS:\n" +
+                           "• Vuelo Ida (" + pasajeActual.getIda_origen() + " → " + pasajeActual.getIda_destino() + "): $" + pasajeActual.getIda_precio() + "\n" +
+                           "• Vuelo Vuelta (" + pasajeActual.getVuelta_origen() + " → " + pasajeActual.getVuelta_destino() + "): $" + pasajeActual.getVuelta_precio() + "\n" +
+                           "• Pasajeros: " + pasajeActual.getIda_pasajeros() + "\n" +
+                           "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                           "TOTAL A PAGAR: $" + total + "\n\n" +
+                           "MÉTODO DE PAGO:\n" +
+                           "• Titular: " + pasajeActual.getNombre_titular_tarjeta() + "\n" +
+                           "• Tarjeta: " + tarjetaOculta + "\n" +
+                           "• Vencimiento: " + pasajeActual.getFecha_vencimiento_tarjeta() + "\n\n" +
+                           "¿Desea procesar el pago ahora?";
+        
+        int confirmacion = JOptionPane.showConfirmDialog(
+            null,
+            resumenPago,
+            "Confirmar Pago",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
         );
+        
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            // Simular procesamiento de pago
+            JOptionPane.showMessageDialog(null, 
+                "Procesando pago...\n\n" +
+                "• Verificando datos de tarjeta ✓\n" +
+                "• Contactando banco ✓\n" +
+                "• Autorizando transacción ✓\n" +
+                "• Generando confirmación ✓"
+            );
+            
+            // Generar número de confirmación aleatorio
+            int numeroConfirmacion = (int)(Math.random() * 900000) + 100000;
+            
+            JOptionPane.showMessageDialog(null,
+                "🎉 ¡PAGO PROCESADO EXITOSAMENTE! 🎉\n\n" +
+                "DETALLES DE CONFIRMACIÓN:\n" +
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                "Número de Confirmación: " + numeroConfirmacion + "\n" +
+                "Fecha: " + java.time.LocalDate.now() + "\n" +
+                "Monto: $" + total + "\n" +
+                "Estado: CONFIRMADO\n\n" +
+                "Su reserva ha sido confirmada.\n" +
+                "Recibirá un email de confirmación en:\n" +
+                pasajeActual.getEmail() + "\n\n" +
+                "¡Buen viaje!",
+                "Pago Confirmado",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+        } else {
+            JOptionPane.showMessageDialog(null, "Pago cancelado. Puede procesar el pago más tarde.");
+        }
     }
     
     // === MÉTODOS DE UTILIDAD ===
@@ -455,5 +522,196 @@ public class menu {
         }
         JOptionPane.showMessageDialog(null, mensaje);
         System.exit(0);
+    }
+}
+
+// === CLASE AUXILIAR PARA RECOLECCIÓN MEJORADA DE DATOS ===
+class PedirDatosUsuarioMejorado {
+    
+    public pasajes solicitarDatosCompletos() {
+        try {
+            // === DATOS DE VUELO DE IDA ===
+            String ida_origen = JOptionPane.showInputDialog("=== VUELO DE IDA ===\n\nIngrese el origen del viaje de ida:");
+            if (ida_origen == null) return null; // Usuario canceló
+            
+            String ida_destino = JOptionPane.showInputDialog(
+                "Seleccione el destino del viaje de ida (Escriba el número):\n\n" +
+                "1. Madrid\n" +
+                "2. Barcelona\n" +
+                "3. Moscú\n" +
+                "4. Osaka\n" +
+                "5. Bogotá");
+            if (ida_destino == null) return null;
+            
+            ida_destino = convertirDestino(ida_destino);
+            if (ida_destino == null) return null;
+            
+            String ida_fecha = JOptionPane.showInputDialog("Ingrese la fecha del viaje de ida (DD/MM/AAAA):");
+            if (ida_fecha == null) return null;
+            
+            String ida_pasajeros_str = JOptionPane.showInputDialog("Ingrese el número de pasajeros para el viaje de ida:");
+            if (ida_pasajeros_str == null) return null;
+            int ida_pasajeros = Integer.parseInt(ida_pasajeros_str);
+            
+            String ida_precio_str = JOptionPane.showInputDialog("Ingrese el precio del viaje de ida:");
+            if (ida_precio_str == null) return null;
+            double ida_precio = Double.parseDouble(ida_precio_str);
+            
+            String ida_turistaPaquete = JOptionPane.showInputDialog("Ingrese el paquete turístico para el viaje de ida:");
+            if (ida_turistaPaquete == null) ida_turistaPaquete = "";
+            
+            String ida_opcionesExtra = JOptionPane.showInputDialog("Ingrese las opciones extra para el viaje de ida:");
+            if (ida_opcionesExtra == null) ida_opcionesExtra = "";
+            
+            // === DATOS DE VUELO DE VUELTA ===
+            String vuelta_origen = JOptionPane.showInputDialog("=== VUELO DE VUELTA ===\n\nIngrese el origen del viaje de vuelta:");
+            if (vuelta_origen == null) return null;
+            
+            String vuelta_destino = JOptionPane.showInputDialog(
+                "Seleccione el destino del viaje de vuelta (Escriba el número):\n\n" +
+                "1. Madrid\n" +
+                "2. Barcelona\n" +
+                "3. Moscú\n" +
+                "4. Osaka\n" +
+                "5. Bogotá\n" +
+                "6. Mismo destino que ida (" + ida_destino + ")");
+            if (vuelta_destino == null) return null;
+            
+            if (vuelta_destino.equals("6")) {
+                vuelta_destino = ida_destino;
+            } else {
+                vuelta_destino = convertirDestino(vuelta_destino);
+                if (vuelta_destino == null) return null;
+            }
+            
+            String vuelta_fecha = JOptionPane.showInputDialog("Ingrese la fecha del viaje de vuelta (DD/MM/AAAA):");
+            if (vuelta_fecha == null) return null;
+            
+            String vuelta_pasajeros_str = JOptionPane.showInputDialog("Ingrese el número de pasajeros para el viaje de vuelta:");
+            if (vuelta_pasajeros_str == null) return null;
+            int vuelta_pasajeros = Integer.parseInt(vuelta_pasajeros_str);
+            
+            String vuelta_precio_str = JOptionPane.showInputDialog("Ingrese el precio del viaje de vuelta:");
+            if (vuelta_precio_str == null) return null;
+            double vuelta_precio = Double.parseDouble(vuelta_precio_str);
+            
+            String vuelta_turistaPaquete = JOptionPane.showInputDialog("Ingrese el paquete turístico para el viaje de vuelta:");
+            if (vuelta_turistaPaquete == null) vuelta_turistaPaquete = "";
+            
+            String vuelta_opcionesExtra = JOptionPane.showInputDialog("Ingrese las opciones extra para el viaje de vuelta:");
+            if (vuelta_opcionesExtra == null) vuelta_opcionesExtra = "";
+            
+            // === DATOS PERSONALES ===
+            String datos = JOptionPane.showInputDialog("=== DATOS PERSONALES ===\n\nIngrese información adicional (opcional):");
+            if (datos == null) datos = "";
+            
+            String nombre = JOptionPane.showInputDialog("Ingrese su nombre:");
+            if (nombre == null) return null;
+            
+            String apellido = JOptionPane.showInputDialog("Ingrese su apellido:");
+            if (apellido == null) return null;
+            
+            String nacionalidad = JOptionPane.showInputDialog("Ingrese su nacionalidad:");
+            if (nacionalidad == null) return null;
+            
+            String pais_de_residencia = JOptionPane.showInputDialog("Ingrese su país de residencia:");
+            if (pais_de_residencia == null) return null;
+            
+            String fecha_de_nacimiento = JOptionPane.showInputDialog("Ingrese su fecha de nacimiento (DD/MM/AAAA):");
+            if (fecha_de_nacimiento == null) return null;
+            
+            // === DATOS DE PASAPORTE ===
+            String numero_de_pasaporte_str = JOptionPane.showInputDialog("=== DATOS DE PASAPORTE ===\n\nIngrese su número de pasaporte:");
+            if (numero_de_pasaporte_str == null) return null;
+            int numero_de_pasaporte = Integer.parseInt(numero_de_pasaporte_str);
+            
+            String pais_emisor_pasaporte = JOptionPane.showInputDialog("Ingrese el país emisor de su pasaporte:");
+            if (pais_emisor_pasaporte == null) return null;
+            
+            String fecha_expiracion_pasaporte = JOptionPane.showInputDialog("Ingrese la fecha de expiración de su pasaporte (DD/MM/AAAA):");
+            if (fecha_expiracion_pasaporte == null) return null;
+            
+            // === DATOS DE CONTACTO ===
+            String telefono_str = JOptionPane.showInputDialog("=== DATOS DE CONTACTO ===\n\nIngrese su número de teléfono:");
+            if (telefono_str == null) return null;
+            int telefono = Integer.parseInt(telefono_str);
+            
+            String email = JOptionPane.showInputDialog("Ingrese su correo electrónico:");
+            if (email == null) return null;
+            
+            String direccion = JOptionPane.showInputDialog("Ingrese su dirección:");
+            if (direccion == null) return null;
+            
+            String codigoPostal = JOptionPane.showInputDialog("Ingrese su código postal:");
+            if (codigoPostal == null) return null;
+            
+            String provincia = JOptionPane.showInputDialog("Ingrese su provincia:");
+            if (provincia == null) return null;
+            
+            String poblacion = JOptionPane.showInputDialog("Ingrese su población:");
+            if (poblacion == null) return null;
+            
+            // === DATOS DE PAGO ===
+            String numero_tarjeta = JOptionPane.showInputDialog("=== DATOS DE PAGO ===\n\nIngrese el número de su tarjeta:");
+            if (numero_tarjeta == null) return null;
+            
+            String nombre_titular_tarjeta = JOptionPane.showInputDialog("Ingrese el nombre del titular de la tarjeta:");
+            if (nombre_titular_tarjeta == null) return null;
+            
+            String fecha_vencimiento_tarjeta = JOptionPane.showInputDialog("Ingrese la fecha de vencimiento de su tarjeta (MM/AA):");
+            if (fecha_vencimiento_tarjeta == null) return null;
+            
+            String codigo_seguridad_tarjeta = JOptionPane.showInputDialog("Ingrese el código de seguridad de su tarjeta (CVV):");
+            if (codigo_seguridad_tarjeta == null) return null;
+            
+            // === TÉRMINOS Y CONDICIONES ===
+            boolean aceptar_terminos = JOptionPane.showConfirmDialog(
+                null,
+                "=== TÉRMINOS Y CONDICIONES ===\n\n" +
+                "Al aceptar, usted confirma que:\n" +
+                "• Ha leído y acepta los términos de servicio\n" +
+                "• La información proporcionada es correcta\n" +
+                "• Autoriza el procesamiento de sus datos\n" +
+                "• Acepta las políticas de cancelación\n\n" +
+                "¿Acepta los términos y condiciones?",
+                "Términos y Condiciones",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+            ) == JOptionPane.YES_OPTION;
+            
+            if (!aceptar_terminos) {
+                JOptionPane.showMessageDialog(null, "Debe aceptar los términos y condiciones para continuar.");
+                return null;
+            }
+            
+            // === CREAR OBJETO PASAJES CON TODOS LOS DATOS ===
+            return new pasajes(
+                ida_origen, ida_destino, ida_fecha, ida_pasajeros, ida_precio, ida_turistaPaquete, ida_opcionesExtra,
+                vuelta_origen, vuelta_destino, vuelta_fecha, vuelta_pasajeros, vuelta_precio, vuelta_turistaPaquete, vuelta_opcionesExtra,
+                datos, nombre, apellido, nacionalidad, pais_de_residencia, fecha_de_nacimiento, numero_de_pasaporte, pais_emisor_pasaporte, fecha_expiracion_pasaporte,
+                telefono, email, direccion, codigoPostal, provincia, poblacion,
+                numero_tarjeta, nombre_titular_tarjeta, fecha_vencimiento_tarjeta, codigo_seguridad_tarjeta, aceptar_terminos
+            );
+            
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error: Debe ingresar números válidos en los campos numéricos.");
+            return null;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error inesperado: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    private String convertirDestino(String opcion) {
+        switch (opcion) {
+            case "1": return "Madrid";
+            case "2": return "Barcelona";
+            case "3": return "Moscú";
+            case "4": return "Osaka";
+            case "5": return "Bogotá";
+            default:
+                JOptionPane.showMessageDialog(null, "Destino no válido. Por favor, intente de nuevo.");
+                return null;
+        }
     }
 }

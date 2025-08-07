@@ -1,4 +1,4 @@
-public class proceso_pago {
+/* public class proceso_pago {
     private double totalaPagar;
     private double impuestos;
     private double descuento;
@@ -23,3 +23,4 @@ public class proceso_pago {
         return totalaPagar;
     }
 }
+*/
