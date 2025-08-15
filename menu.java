@@ -113,56 +113,106 @@ public class menu {
     
     // === NUEVA FUNCIONALIDAD: SOLICITAR DATOS ===
     private void solicitarDatosReserva() {
-        int confirmacion = JOptionPane.showConfirmDialog(
+        String[] metodos = {
+            "Recolección Completa (Recomendado)",
+            "Recolección Simplificada (Estilo Original)",
+            "Cancelar"
+        };
+        
+        int metodoSeleccionado = JOptionPane.showOptionDialog(
             null,
             "=== SOLICITAR DATOS DE RESERVA ===\n\n" +
-            "Se le solicitarán todos los datos necesarios para su reserva:\n\n" +
+            "Seleccione el método de recolección de datos:\n\n" +
+            "• COMPLETA: Interfaz mejorada con validaciones\n" +
+            "• SIMPLIFICADA: Estilo original con precios automáticos\n\n" +
+            "Ambos métodos recopilan:\n" +
             "• Información de vuelos (ida y vuelta)\n" +
-            "• Datos personales\n" +
-            "• Información de pasaporte\n" +
-            "• Datos de contacto\n" +
-            "• Información de pago\n" +
-            "• Términos y condiciones\n\n" +
-            "¿Desea continuar?",
-            "Confirmar Recolección de Datos",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE
+            "• Datos personales y pasaporte\n" +
+            "• Información de contacto y pago\n" +
+            "• Términos y condiciones",
+            "Método de Recolección",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            metodos,
+            metodos[0]
         );
         
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            JOptionPane.showMessageDialog(null, 
-                "Iniciando recolección de datos...\n\n" +
-                "Por favor, complete toda la información solicitada.\n" +
-                "Puede cancelar en cualquier momento presionando 'Cancelar'."
-            );
+        switch (metodoSeleccionado) {
+            case 0: // Recolección Completa
+                solicitarDatosCompletos();
+                break;
+            case 1: // Recolección Simplificada
+                solicitarDatosSimplificados();
+                break;
+            case 2: case -1: // Cancelar
+                return;
+        }
+    }
+    
+    private void solicitarDatosCompletos() {
+        JOptionPane.showMessageDialog(null, 
+            "=== RECOLECCIÓN COMPLETA ===\n\n" +
+            "Se abrirá una interfaz completa con validaciones.\n" +
+            "Puede cancelar en cualquier momento presionando 'Cancelar'."
+        );
+        
+        try {
+            PedirDatosUsuarioMejorado recolectorMejorado = new PedirDatosUsuarioMejorado();
+            this.pasajeActual = recolectorMejorado.solicitarDatosCompletos();
             
-            try {
-                // Crear una nueva instancia mejorada del recolector de datos
-                PedirDatosUsuarioMejorado recolectorMejorado = new PedirDatosUsuarioMejorado();
-                this.pasajeActual = recolectorMejorado.solicitarDatosCompletos();
+            if (this.pasajeActual != null) {
+                this.pasajeActual.setNombre(login.getUsuarioActivo());
                 
-                if (this.pasajeActual != null) {
-                    // Asignar el usuario actual al pasaje
-                    this.pasajeActual.setNombre(login.getUsuarioActivo());
-                    
-                    // Mostrar mensaje de finalización
-                    JOptionPane.showMessageDialog(null, 
-                        "¡Datos recopilados exitosamente!\n\n" +
-                        "Toda la información ha sido registrada.\n" +
-                        "Puede ver un resumen en 'Ver Datos Recopilados'."
-                    );
-                } else {
-                    JOptionPane.showMessageDialog(null, 
-                        "Recolección de datos cancelada.\n" +
-                        "Puede intentar nuevamente cuando desee."
-                    );
-                }
-            } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, 
-                    "Error al recopilar datos: " + e.getMessage() + "\n" +
-                    "Por favor, intente nuevamente."
+                    "¡Datos recopilados exitosamente!\n\n" +
+                    "Toda la información ha sido registrada.\n" +
+                    "Puede ver un resumen en 'Ver Datos Recopilados'."
+                );
+            } else {
+                JOptionPane.showMessageDialog(null, 
+                    "Recolección de datos cancelada.\n" +
+                    "Puede intentar nuevamente cuando desee."
                 );
             }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, 
+                "Error al recopilar datos: " + e.getMessage() + "\n" +
+                "Por favor, intente nuevamente."
+            );
+        }
+    }
+    
+    private void solicitarDatosSimplificados() {
+        JOptionPane.showMessageDialog(null, 
+            "=== RECOLECCIÓN SIMPLIFICADA ===\n\n" +
+            "Los precios serán asignados automáticamente.\n" +
+            "Complete la información solicitada."
+        );
+        
+        try {
+            PedirDatosUsuarioOriginal recolectorOriginal = new PedirDatosUsuarioOriginal();
+            this.pasajeActual = recolectorOriginal.solicitarDatos();
+            
+            if (this.pasajeActual != null) {
+                this.pasajeActual.setNombre(login.getUsuarioActivo());
+                
+                JOptionPane.showMessageDialog(null, 
+                    "¡Datos recopilados exitosamente!\n\n" +
+                    "Los precios han sido asignados automáticamente.\n" +
+                    "Total: $" + (this.pasajeActual.getIda_precio() + this.pasajeActual.getVuelta_precio())
+                );
+            } else {
+                JOptionPane.showMessageDialog(null, 
+                    "Recolección de datos cancelada.\n" +
+                    "Puede intentar nuevamente cuando desee."
+                );
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, 
+                "Error al recopilar datos: " + e.getMessage() + "\n" +
+                "Por favor, intente nuevamente."
+            );
         }
     }
     
@@ -295,7 +345,8 @@ public class menu {
             int opcion = JOptionPane.showConfirmDialog(
                 null,
                 "No hay datos de reserva recopilados.\n\n" +
-                "¿Desea recopilar los datos ahora?",
+                "¿Desea recopilar los datos ahora?\n" +
+                "(Podrá elegir entre recolección completa o simplificada)",
                 "Datos Requeridos",
                 JOptionPane.YES_NO_OPTION
             );
@@ -350,13 +401,13 @@ public class menu {
                         "• Fecha: " + pasajeActual.getIda_fecha() + "\n" +
                         "• Pasajeros: " + pasajeActual.getIda_pasajeros() + "\n" +
                         "• Precio: $" + pasajeActual.getIda_precio() + "\n" +
-                        "• Paquete: " + (pasajeActual.getIda_turistaPaquete().isEmpty() ? "Ninguno" : pasajeActual.getIda_turistaPaquete()) + "\n\n" +
+                        "• Extras: " + (pasajeActual.getIda_opcionesExtra().isEmpty() ? "Ninguno" : pasajeActual.getIda_opcionesExtra()) + "\n\n" +
                         "VUELO DE VUELTA:\n" +
                         "• Ruta: " + pasajeActual.getVuelta_origen() + " → " + pasajeActual.getVuelta_destino() + "\n" +
                         "• Fecha: " + pasajeActual.getVuelta_fecha() + "\n" +
                         "• Pasajeros: " + pasajeActual.getVuelta_pasajeros() + "\n" +
                         "• Precio: $" + pasajeActual.getVuelta_precio() + "\n" +
-                        "• Paquete: " + (pasajeActual.getVuelta_turistaPaquete().isEmpty() ? "Ninguno" : pasajeActual.getVuelta_turistaPaquete()) + "\n\n" +
+                        "• Extras: " + (pasajeActual.getVuelta_opcionesExtra().isEmpty() ? "Ninguno" : pasajeActual.getVuelta_opcionesExtra()) + "\n\n" +
                         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
                         "PASAJERO PRINCIPAL:\n" +
                         "• Nombre: " + pasajeActual.getNombre() + " " + pasajeActual.getApellido() + "\n" +
@@ -530,6 +581,9 @@ class PedirDatosUsuarioMejorado {
     
     public pasajes solicitarDatosCompletos() {
         try {
+            java.util.Random rand = new java.util.Random();
+            double[] precios = {560.0, 650.0, 490.0, 340.0, 750.0, 820.0, 430.0, 590.0};
+            
             // === DATOS DE VUELO DE IDA ===
             String ida_origen = JOptionPane.showInputDialog("=== VUELO DE IDA ===\n\nIngrese el origen del viaje de ida:");
             if (ida_origen == null) return null; // Usuario canceló
@@ -553,14 +607,11 @@ class PedirDatosUsuarioMejorado {
             if (ida_pasajeros_str == null) return null;
             int ida_pasajeros = Integer.parseInt(ida_pasajeros_str);
             
-            String ida_precio_str = JOptionPane.showInputDialog("Ingrese el precio del viaje de ida:");
-            if (ida_precio_str == null) return null;
-            double ida_precio = Double.parseDouble(ida_precio_str);
+            // Generar precio aleatorio para ida
+            double ida_precio = precios[rand.nextInt(precios.length)];
+            JOptionPane.showMessageDialog(null, "El precio del viaje de ida es: $" + ida_precio);
             
-            String ida_turistaPaquete = JOptionPane.showInputDialog("Ingrese el paquete turístico para el viaje de ida:");
-            if (ida_turistaPaquete == null) ida_turistaPaquete = "";
-            
-            String ida_opcionesExtra = JOptionPane.showInputDialog("Ingrese las opciones extra para el viaje de ida:");
+            String ida_opcionesExtra = JOptionPane.showInputDialog("Ingrese las opciones extra para el viaje de ida (opcional):");
             if (ida_opcionesExtra == null) ida_opcionesExtra = "";
             
             // === DATOS DE VUELO DE VUELTA ===
@@ -574,11 +625,11 @@ class PedirDatosUsuarioMejorado {
                 "3. Moscú\n" +
                 "4. Osaka\n" +
                 "5. Bogotá\n" +
-                "6. Mismo destino que ida (" + ida_destino + ")");
+                "6. Mismo que origen de ida (" + ida_origen + ")");
             if (vuelta_destino == null) return null;
             
             if (vuelta_destino.equals("6")) {
-                vuelta_destino = ida_destino;
+                vuelta_destino = ida_origen;
             } else {
                 vuelta_destino = convertirDestino(vuelta_destino);
                 if (vuelta_destino == null) return null;
@@ -591,14 +642,11 @@ class PedirDatosUsuarioMejorado {
             if (vuelta_pasajeros_str == null) return null;
             int vuelta_pasajeros = Integer.parseInt(vuelta_pasajeros_str);
             
-            String vuelta_precio_str = JOptionPane.showInputDialog("Ingrese el precio del viaje de vuelta:");
-            if (vuelta_precio_str == null) return null;
-            double vuelta_precio = Double.parseDouble(vuelta_precio_str);
+            // Generar precio aleatorio para vuelta
+            double vuelta_precio = precios[rand.nextInt(precios.length)];
+            JOptionPane.showMessageDialog(null, "El precio del viaje de vuelta es: $" + vuelta_precio);
             
-            String vuelta_turistaPaquete = JOptionPane.showInputDialog("Ingrese el paquete turístico para el viaje de vuelta:");
-            if (vuelta_turistaPaquete == null) vuelta_turistaPaquete = "";
-            
-            String vuelta_opcionesExtra = JOptionPane.showInputDialog("Ingrese las opciones extra para el viaje de vuelta:");
+            String vuelta_opcionesExtra = JOptionPane.showInputDialog("Ingrese las opciones extra para el viaje de vuelta (opcional):");
             if (vuelta_opcionesExtra == null) vuelta_opcionesExtra = "";
             
             // === DATOS PERSONALES ===
@@ -621,9 +669,8 @@ class PedirDatosUsuarioMejorado {
             if (fecha_de_nacimiento == null) return null;
             
             // === DATOS DE PASAPORTE ===
-            String numero_de_pasaporte_str = JOptionPane.showInputDialog("=== DATOS DE PASAPORTE ===\n\nIngrese su número de pasaporte:");
-            if (numero_de_pasaporte_str == null) return null;
-            int numero_de_pasaporte = Integer.parseInt(numero_de_pasaporte_str);
+            String numero_de_pasaporte = JOptionPane.showInputDialog("=== DATOS DE PASAPORTE ===\n\nIngrese su número de pasaporte:");
+            if (numero_de_pasaporte == null) return null;
             
             String pais_emisor_pasaporte = JOptionPane.showInputDialog("Ingrese el país emisor de su pasaporte:");
             if (pais_emisor_pasaporte == null) return null;
@@ -639,14 +686,8 @@ class PedirDatosUsuarioMejorado {
             String email = JOptionPane.showInputDialog("Ingrese su correo electrónico:");
             if (email == null) return null;
             
-            String direccion = JOptionPane.showInputDialog("Ingrese su dirección:");
-            if (direccion == null) return null;
-            
             String codigoPostal = JOptionPane.showInputDialog("Ingrese su código postal:");
             if (codigoPostal == null) return null;
-            
-            String provincia = JOptionPane.showInputDialog("Ingrese su provincia:");
-            if (provincia == null) return null;
             
             String poblacion = JOptionPane.showInputDialog("Ingrese su población:");
             if (poblacion == null) return null;
@@ -684,12 +725,25 @@ class PedirDatosUsuarioMejorado {
                 return null;
             }
             
+            // Mostrar resumen de precios
+            double total = ida_precio + vuelta_precio;
+            JOptionPane.showMessageDialog(null, 
+                "=== RESUMEN DE PRECIOS ===\n\n" +
+                "Vuelo de Ida: $" + ida_precio + "\n" +
+                "Vuelo de Vuelta: $" + vuelta_precio + "\n" +
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                "TOTAL: $" + total + "\n\n" +
+                "Los precios han sido asignados automáticamente\n" +
+                "según disponibilidad y demanda."
+            );
+            
             // === CREAR OBJETO PASAJES CON TODOS LOS DATOS ===
             return new pasajes(
-                ida_origen, ida_destino, ida_fecha, ida_pasajeros, ida_precio, ida_turistaPaquete, ida_opcionesExtra,
-                vuelta_origen, vuelta_destino, vuelta_fecha, vuelta_pasajeros, vuelta_precio, vuelta_turistaPaquete, vuelta_opcionesExtra,
-                datos, nombre, apellido, nacionalidad, pais_de_residencia, fecha_de_nacimiento, numero_de_pasaporte, pais_emisor_pasaporte, fecha_expiracion_pasaporte,
-                telefono, email, direccion, codigoPostal, provincia, poblacion,
+                ida_origen, ida_destino, ida_fecha, ida_pasajeros, ida_precio, ida_opcionesExtra,
+                vuelta_origen, vuelta_destino, vuelta_fecha, vuelta_pasajeros, vuelta_precio, vuelta_opcionesExtra,
+                datos, nombre, apellido, nacionalidad, pais_de_residencia, fecha_de_nacimiento, 
+                numero_de_pasaporte, pais_emisor_pasaporte, fecha_expiracion_pasaporte,
+                telefono, email, codigoPostal, poblacion,
                 numero_tarjeta, nombre_titular_tarjeta, fecha_vencimiento_tarjeta, codigo_seguridad_tarjeta, aceptar_terminos
             );
             
@@ -712,6 +766,159 @@ class PedirDatosUsuarioMejorado {
             default:
                 JOptionPane.showMessageDialog(null, "Destino no válido. Por favor, intente de nuevo.");
                 return null;
+        }
+    }
+}
+
+// === CLASE AUXILIAR PARA RECOLECCIÓN ESTILO ORIGINAL ===
+class PedirDatosUsuarioOriginal {
+    
+    public pasajes solicitarDatos() {
+        try {
+            java.util.Random rand = new java.util.Random();
+            double[] precios = {560.0, 650.0, 490.0, 340.0};
+
+            // === VUELO DE IDA ===
+            String ida_origen = JOptionPane.showInputDialog("Ingrese el origen del viaje de ida:"); 
+            if (ida_origen == null) return null;
+            
+            String ida_destino = JOptionPane.showInputDialog("Ingrese el destino del viaje de ida (Escriba el numero):" +
+                "\nOpciones:" + "1.Madrid" + " 2.Barcelona" + " 3.Moscú" + " 4.Osaka" + " 5.Bogota" );
+            if (ida_destino == null) return null;
+            
+            switch (ida_destino) {
+                case "1": ida_destino = "Madrid"; break;
+                case "2": ida_destino = "Barcelona"; break;
+                case "3": ida_destino = "Moscú"; break;
+                case "4": ida_destino = "Osaka"; break;
+                case "5": ida_destino = "Bogota"; break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Destino no válido. Por favor, intente de nuevo.");
+                    return null;
+            }
+
+            String ida_fecha = JOptionPane.showInputDialog("Ingrese la fecha del viaje de ida:");
+            if (ida_fecha == null) return null;
+            
+            String ida_pasajeros_str = JOptionPane.showInputDialog("Ingrese el número de pasajeros para el viaje de ida:");
+            if (ida_pasajeros_str == null) return null;
+            int ida_pasajeros = Integer.parseInt(ida_pasajeros_str);
+            
+            double ida_precio = precios[rand.nextInt(precios.length)];
+            JOptionPane.showMessageDialog(null, "El precio del viaje de ida es: $" + ida_precio);
+            
+            String ida_opcionesExtra = JOptionPane.showInputDialog("Ingrese las opciones extra para el viaje de ida:");
+            if (ida_opcionesExtra == null) ida_opcionesExtra = "";
+            
+            String vuelta_origen = JOptionPane.showInputDialog("Ingrese el origen del viaje de vuelta:");
+            if (vuelta_origen == null) return null;
+
+            // === VUELO DE VUELTA ===
+            String vuelta_destino = JOptionPane.showInputDialog("Ingrese el destino del viaje de vuelta:" +
+                "\nOpciones:" + "1.Madrid" + " 2.Barcelona" + " 3.Moscú" + " 4.Osaka" + " 5.Bogota" + " 6.Igual que ida");
+            if (vuelta_destino == null) return null;
+            
+            switch (vuelta_destino) {
+                case "1": vuelta_destino = "Madrid"; break;
+                case "2": vuelta_destino = "Barcelona"; break;
+                case "3": vuelta_destino = "Moscú"; break;
+                case "4": vuelta_destino = "Osaka"; break;
+                case "5": vuelta_destino = "Bogota"; break;
+                case "6": vuelta_destino = ida_origen; break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Destino no válido. Por favor, intente de nuevo.");
+                    return null;
+            }
+            
+            String vuelta_fecha = JOptionPane.showInputDialog("Ingrese la fecha del viaje de vuelta:");
+            if (vuelta_fecha == null) return null;
+            
+            String vuelta_pasajeros_str = JOptionPane.showInputDialog("Ingrese el número de pasajeros para el viaje de vuelta:");
+            if (vuelta_pasajeros_str == null) return null;
+            int vuelta_pasajeros = Integer.parseInt(vuelta_pasajeros_str);
+            
+            double vuelta_precio = precios[rand.nextInt(precios.length)];
+            JOptionPane.showMessageDialog(null, "El precio del viaje de vuelta es: $" + vuelta_precio);
+            
+            String vuelta_opcionesExtra = JOptionPane.showInputDialog("Ingrese las opciones extra para el viaje de vuelta:");
+            if (vuelta_opcionesExtra == null) vuelta_opcionesExtra = "";
+
+            // === DATOS PERSONALES ===
+            String datos = JOptionPane.showInputDialog("Ingrese sus datos personales:");
+            if (datos == null) datos = "";
+            
+            String nombre = JOptionPane.showInputDialog("Ingrese su nombre:");
+            if (nombre == null) return null;
+            
+            String apellido = JOptionPane.showInputDialog("Ingrese su apellido:");  
+            if (apellido == null) return null;
+            
+            String nacionalidad = JOptionPane.showInputDialog("Ingrese su nacionalidad:");
+            if (nacionalidad == null) return null;
+            
+            String pais_de_residencia = JOptionPane.showInputDialog("Ingrese su país de residencia:");
+            if (pais_de_residencia == null) return null;
+            
+            String fecha_de_nacimiento = JOptionPane.showInputDialog("Ingrese su fecha de nacimiento:");
+            if (fecha_de_nacimiento == null) return null;
+            
+            String numero_de_pasaporte = JOptionPane.showInputDialog("Ingrese su número de pasaporte:");
+            if (numero_de_pasaporte == null) return null;
+            
+            String pais_emisor_pasaporte = JOptionPane.showInputDialog("Ingrese el país emisor de su pasaporte:");
+            if (pais_emisor_pasaporte == null) return null;
+            
+            String fecha_expiracion_pasaporte = JOptionPane.showInputDialog("Ingrese la fecha de expiración de su pasaporte:");
+            if (fecha_expiracion_pasaporte == null) return null;
+
+            // === DATOS DE CONTACTO ===
+            String telefono_str = JOptionPane.showInputDialog("Ingrese su número de teléfono:");
+            if (telefono_str == null) return null;
+            int telefono = Integer.parseInt(telefono_str);
+            
+            String email = JOptionPane.showInputDialog("Ingrese su correo electrónico:");
+            if (email == null) return null;
+            
+            String codigoPostal = JOptionPane.showInputDialog("Ingrese su código postal:");
+            if (codigoPostal == null) return null;
+            
+            String poblacion = JOptionPane.showInputDialog("Ingrese su población:");
+            if (poblacion == null) return null;
+
+            // === DATOS DE PAGO ===
+            String numeero_tarjeta = JOptionPane.showInputDialog("Ingrese el número de su tarjeta:");
+            if (numeero_tarjeta == null) return null;
+            
+            String nombre_titular_tarjeta = JOptionPane.showInputDialog("Ingrese el nombre del titular de la tarjeta:");
+            if (nombre_titular_tarjeta == null) return null;
+            
+            String fecha_vencimiento_tarjeta = JOptionPane.showInputDialog("Ingrese la fecha de vencimiento de su tarjeta:");
+            if (fecha_vencimiento_tarjeta == null) return null;
+            
+            String codigo_seguridad_tarjeta = JOptionPane.showInputDialog("Ingrese el código de seguridad de su tarjeta:");
+            if (codigo_seguridad_tarjeta == null) return null;
+            
+            boolean aceptar_terminos = JOptionPane.showConfirmDialog(null, "¿Acepta los términos y condiciones?") == JOptionPane.YES_OPTION;
+
+            if (!aceptar_terminos) {
+                JOptionPane.showMessageDialog(null, "Debe aceptar los términos y condiciones para continuar.");
+                return null;
+            }
+
+            // Crear objeto pasajes usando el constructor actualizado
+            return new pasajes(ida_origen, ida_destino, ida_fecha, ida_pasajeros, ida_precio, ida_opcionesExtra, 
+                             vuelta_origen, vuelta_destino, vuelta_fecha, vuelta_pasajeros, vuelta_precio, vuelta_opcionesExtra, 
+                             datos, nombre, apellido, nacionalidad, pais_de_residencia, fecha_de_nacimiento, 
+                             numero_de_pasaporte, pais_emisor_pasaporte, fecha_expiracion_pasaporte, 
+                             telefono, email, codigoPostal, poblacion, 
+                             numeero_tarjeta, nombre_titular_tarjeta, fecha_vencimiento_tarjeta, codigo_seguridad_tarjeta, aceptar_terminos);
+            
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error: Debe ingresar números válidos en los campos numéricos.");
+            return null;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error inesperado: " + e.getMessage());
+            return null;
         }
     }
 }
