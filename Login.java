@@ -6,29 +6,29 @@ public class Login {
     private String contraseña = null;
     private boolean sesionActiva = false;
     private boolean usuarioRegistrado = false;
-    
+
     public void Register() {
         if (usuarioRegistrado) {
-            JOptionPane.showMessageDialog(null, "Ya hay un usuario registrado. Elimínelo primero.");
+            JOptionPane.showMessageDialog(null, "Ya hay un usuario registrado. Eliminelo primero.");
             return;
         }
-        
+
         String nuevoUsuario = JOptionPane.showInputDialog("Ingrese su usuario:");
-        if (nuevoUsuario == null || nuevoUsuario.equals("")) {
-            JOptionPane.showMessageDialog(null, "Debe ingresar un usuario válido.");
+        if (nuevoUsuario == null || nuevoUsuario.trim().isEmpty()) { // Usar trim() para evitar espacios en blanco
+            JOptionPane.showMessageDialog(null, "Debe ingresar un usuario valido.");
             return;
         }
-        
+
         String nuevaContraseña = JOptionPane.showInputDialog("Ingrese su contraseña:");
-        if (nuevaContraseña == null || nuevaContraseña.equals("")) {
-            JOptionPane.showMessageDialog(null, "Debe ingresar una contraseña válida.");
+        if (nuevaContraseña == null || nuevaContraseña.isEmpty()) { // No usar trim() si se permiten contraseñas con espacios
+            JOptionPane.showMessageDialog(null, "Debe ingresar una contraseña valida.");
             return;
         }
-        
+
         this.usuario = nuevoUsuario;
         this.contraseña = nuevaContraseña;
         this.usuarioRegistrado = true;
-        
+
         JOptionPane.showMessageDialog(null, "Usuario registrado exitosamente: " + nuevoUsuario);
     }
 
@@ -37,24 +37,24 @@ public class Login {
             JOptionPane.showMessageDialog(null, "No hay usuarios registrados. Registre uno primero.");
             return false;
         }
-        
+
         if (sesionActiva) {
-            JOptionPane.showMessageDialog(null, "Ya hay una sesión activa para: " + usuario + ". Cierre sesión primero.");
+            JOptionPane.showMessageDialog(null, "Ya hay una sesion activa para: " + usuario + ". Cierre sesion primero.");
             return false;
         }
-        
+
         String inputUsuario = JOptionPane.showInputDialog("Ingrese su usuario:");
         if (inputUsuario == null) {
             return false;
         }
-        
+
         String inputContraseña = JOptionPane.showInputDialog("Ingrese su contraseña:");
         if (inputContraseña == null) {
             return false;
         }
-        
+
         if (usuario.equals(inputUsuario) && contraseña.equals(inputContraseña)) {
-            JOptionPane.showMessageDialog(null, "¡Inicio de sesión exitoso para: " + inputUsuario + "!");
+            JOptionPane.showMessageDialog(null, "Inicio de sesion exitoso para: " + inputUsuario + "!");
             this.sesionActiva = true;
             return true;
         } else {
@@ -65,10 +65,10 @@ public class Login {
 
     public void cerrarSesion() {
         if (sesionActiva) {
-            JOptionPane.showMessageDialog(null, "Sesión cerrada exitosamente para: " + usuario);
+            JOptionPane.showMessageDialog(null, "Sesion cerrada exitosamente para: " + usuario);
             this.sesionActiva = false;
         } else {
-            JOptionPane.showMessageDialog(null, "No hay ninguna sesión activa.");
+            JOptionPane.showMessageDialog(null, "No hay ninguna sesion activa.");
         }
     }
 
@@ -76,8 +76,8 @@ public class Login {
         if (sesionActiva) {
             cerrarSesion();
         }
-        
-        JOptionPane.showMessageDialog(null, "Ahora puede iniciar sesión o registrar un nuevo usuario.");
+
+        JOptionPane.showMessageDialog(null, "Ahora puede iniciar sesion o registrar un nuevo usuario.");
     }
 
     public void eliminarUsuario() {
@@ -85,15 +85,15 @@ public class Login {
             JOptionPane.showMessageDialog(null, "No hay usuarios registrados.");
             return;
         }
-        
+
         if (sesionActiva) {
             cerrarSesion();
         }
-        
+
         this.usuario = null;
         this.contraseña = null;
         this.usuarioRegistrado = false;
-        
+
         JOptionPane.showMessageDialog(null, "Usuario eliminado exitosamente.");
     }
 
@@ -117,11 +117,11 @@ public class Login {
             return null;
         }
     }
-    
+
     public boolean isSesionActiva() {
         return sesionActiva;
     }
-    
+
     public int getTotalUsuarios() {
         if (usuarioRegistrado) {
             return 1;
@@ -129,7 +129,7 @@ public class Login {
             return 0;
         }
     }
-    
+
     public boolean usuarioExiste(String usuarioAVerificar) {
         if (usuarioRegistrado && usuario.equals(usuarioAVerificar)) {
             return true;
