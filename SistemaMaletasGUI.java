@@ -49,7 +49,7 @@ public class SistemaMaletasGUI {
                     break;
                 }
 
-                try {
+                if (pesoStr.matches("\\d+(\\.\\d+)?")) {
                     peso = Double.parseDouble(pesoStr);
                     if (peso > 0) {
                         pesoValido = true;
@@ -59,7 +59,7 @@ public class SistemaMaletasGUI {
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
                     }
-                } catch (NumberFormatException e) {
+                } else {
                     JOptionPane.showMessageDialog(null,
                         "Debe ingresar un numero valido (ej. 5.5)",
                         "Error",
@@ -105,19 +105,18 @@ public class SistemaMaletasGUI {
         }
 
         if (contador > 0) {
-            StringBuilder resumen = new StringBuilder();
-            resumen.append("--- RESUMEN DE EQUIPAJE REGISTRADO ---\n");
+            String resumen = "--- RESUMEN DE EQUIPAJE REGISTRADO ---\n";
             for (int i = 0; i < contador; i++) {
-                Maleta m = maletas[i];
-                resumen.append("Maleta #" + (i+1) + ": " +
-                    m.getTipo() + ", " +
-                    m.getPeso() + " kg, " +
-                    "Precio final: $" + m.getCosto() + "\n");
+            Maleta m = maletas[i];
+            resumen += "Maleta #" + (i+1) + ": " +
+                m.getTipo() + ", " +
+                m.getPeso() + " kg, " +
+                "Precio final: $" + m.getCosto() + "\n";
             }
             JOptionPane.showMessageDialog(null,
-                resumen.toString(),
-                "Resumen de Maletas",
-                JOptionPane.INFORMATION_MESSAGE);
+            resumen,
+            "Resumen de Maletas",
+            JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

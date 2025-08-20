@@ -14,13 +14,13 @@ public class Login {
         }
 
         String nuevoUsuario = JOptionPane.showInputDialog("Ingrese su usuario:");
-        if (nuevoUsuario == null || nuevoUsuario.trim().isEmpty()) { // Usar trim() para evitar espacios en blanco
+        if (nuevoUsuario == null) { // Verificar si se ingresó un usuario
             JOptionPane.showMessageDialog(null, "Debe ingresar un usuario valido.");
             return;
         }
 
         String nuevaContraseña = JOptionPane.showInputDialog("Ingrese su contraseña:");
-        if (nuevaContraseña == null || nuevaContraseña.isEmpty()) { // No usar trim() si se permiten contraseñas con espacios
+        if (nuevaContraseña == null || nuevaContraseña.isEmpty()) { // Verificar si se ingresó una contraseña
             JOptionPane.showMessageDialog(null, "Debe ingresar una contraseña valida.");
             return;
         }
